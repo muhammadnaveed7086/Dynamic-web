@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{>headerLinks}}
+
+</head>
+
+<body>
+    {{>navbar}}
+    <!-- main Header -->
+    <div class="container-fluid main_header">
+        <div class="row">
+            <div class="col-md-10 col-12 mx-auto">
+                <div class="main_content">
+                    <form class="temp_form">
+                        <input type="text" id="cityName" placeholder="Enter Your City Name" autocomplete="off">
+                        <input type="submit" value="search" id="submitBtn">
+                    </form>
+                </div>
+                <div class="tempInformation">
+                    <div class="top_layer">
+                        <p id="day"> Tuesday</p>
+                        <p id="time"><span id="hours">12 </span>:<span id="minutes"> 33</span>:<span id="seconds">
+                                39</span><span id="ampm"> PM</span> </p>
+                        <p id="today_date">13 Oct</p>
+                    </div>
+                    <div class="main_layer">
+                        <p id="city_name">Get Output here</p>
+                        <div class="middle_layer data_hide">
+                            <p id="temp"><span id="tempo">0</span><sup>o</sup>C</p>
+                            <p id="temp_status"><i class="fa fa-cloud"></i></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- footer code -->
+    {{>footer}}
+
+    {{!-- script starts here --}}
+    <script>
+        const submitBtn = document.getElementById('submitBtn')
+        city_name = document.getElementById('city_name')
+        const inputcityName = document.getElementById('cityName')
+        const tempo = document.getElementById('tempo')
+        const temp_status = document.getElementById('temp_status')
+        const hours = document.getElementById('hours')
+        const minutes = document.getElementById('minutes')
+        const seconds = document.getElementById('seconds')
+        const today_date=document.getElementById('today_date')
+        //for time and date updation
+        const time = new Date()
+        const hour = time.getHours().toString()
+        const second = time.getSeconds().toString()
+        const minute = time.getMinutes().toString()
+       const ampm=document.getElementById('ampm')
+       const getcurrDay = () => {
+      var weekday = new Array()
+      weekday[0] = 'Sun'
+      weekday[1] = 'Mon'
+      weekday[2] = 'Tue'
+      weekday[3] = 'Wed'
+      weekday[4] = 'Thu'
+      weekday[5] = 'Fri'
+      weekday[6] = 'Sat'
+      let currDay = new Date
+      return (weekday[currDay.getDay()]);
+    }
+    const getcurrMonth = () => {
+      var monthDay = new Array()
+      monthDay[0] = 'Jun'
+      monthDay[1] = 'Feb'
+      monthDay[2] = 'March'
+      monthDay[3] = 'April'
+      monthDay[4] = 'May'
+      monthDay[5] = 'June'
+      monthDay[6] = 'July'
+      monthDay[7] = 'Aug'
+      monthDay[8] = 'Sep'
+      monthDay[9] = 'Oct'
+      monthDay[10] = 'Nov'
+      monthDay[11] = 'Dec'
+      let now = new Date()
+      let Month = now.getMonth()
+      let date = now.getDate()
+      return `${date} ${monthDay[Month]}`
+    }
+    
+      console.log(getcurrDay)
+        const getInfo = async (event) => {
+            event.preventDefault()
+            const inputVal = inputcityName.value;
+            if (inputVal === '') {
+                city_name.innerText = 'Please Enter Your City Name before Check'
+            }
+            else {
+                try {
+                    const url = `https://api.openweathermap.org/data/2.5/weather?q=${inputVal}&units=metric&appid=7f09b2c210187b5b1e0733298f268321`
+                    const response = await fetch(url)
+                    const data = await response.json()
+                    const arrData = [data]
+                    console.log(arrData)
+                    tempo.innerText = arrData[0].main.temp
+                    const tstatus = arrData[0].weather[0].main
+                    console.log(tstatus)
+                    if (tstatus === 'Clouds') {
+                        temp_status.innerHTML = '<i class="fa fa-cloud" style="color: #0098da"></i>';
+                    } else if (tstatus === 'Rain') {
+                        temp_status.innerHTML = '<i class="fa fa-cloud-rain" style="color: #0098da"></i>';
+                    } else if (tstatus === 'Clear') {
+                        temp_status.innerHTML = '<i class="fas fa-sun" style="color:rgb(232, 232, 42)"></i>';
+                    } else {
+                        temp_status.innerHTML = '<i class="fa fa-sun" style="color: #eccc68"></i>';
+                    }
+                    // time functionality updation
+                    const perios = 'AM'
+                    if (hour > 11) {
+                        perios = 'PM'
+                        if (hour > 12) {
+                            hour = hour - 12;
+                        }
+                        ampm.innerHTML=perios
+                    }
+                    hours.innerHTML = hour;
+                    if (minute < 10) {
+                        minute = '0' + minute
+                    }
+                    minutes.innerHTML = minute;
+                    if (second < 10) {
+                        second = '0' + second
+                    }
+                    seconds.innerHTML=second
+                  //  date functionality updation
+                //  today_date.innerHTML=getcurrDay() + getcurrMonth()
+                }
+                catch {
+                    city_name.innerText = 'Please Enter Your City Name Properly'
+
+                }
+
+            }
+
+        }
+        submitBtn.addEventListener('click', getInfo)
+    </script>
+</body>
+
+</html>
